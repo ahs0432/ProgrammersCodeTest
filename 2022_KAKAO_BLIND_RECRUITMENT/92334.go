@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-func main() {
+func testing_92334() {
 	writer := bufio.NewWriter(os.Stdout)
 	defer writer.Flush()
-	fmt.Fprintln(writer, solution([]string{"muzi", "frodo", "apeach", "neo"}, []string{"muzi frodo", "apeach frodo", "frodo neo", "muzi neo", "apeach muzi"}, 2))
-	fmt.Fprintln(writer, solution([]string{"con", "ryan"}, []string{"ryan con", "ryan con", "ryan con", "ryan con"}, 3))
+	fmt.Fprintln(writer, solution_92334([]string{"muzi", "frodo", "apeach", "neo"}, []string{"muzi frodo", "apeach frodo", "frodo neo", "muzi neo", "apeach muzi"}, 2))
+	fmt.Fprintln(writer, solution_92334([]string{"con", "ryan"}, []string{"ryan con", "ryan con", "ryan con", "ryan con"}, 3))
 }
 
-func solution(id_list []string, report []string, k int) []int {
+func solution_92334(id_list []string, report []string, k int) []int {
 	reporter := map[string][]string{}
 	reported := map[string]int{}
 	var stoped []int
