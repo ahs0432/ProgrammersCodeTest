@@ -20,17 +20,10 @@ func solution_92343(info []int, edges [][]int) int {
 	}
 
 	backList := make([]int, len(info))
-	goList := make([][]int, len(info))
 
 	for _, i := range edges {
 		if i[0] != 0 {
 			backList[i[1]] = i[0]
-		}
-
-		if goList[i[0]] == nil {
-			goList[i[0]] = []int{i[1]}
-		} else {
-			goList[i[0]] = append(goList[i[0]], i[1])
 		}
 	}
 
