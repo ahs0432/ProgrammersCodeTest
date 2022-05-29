@@ -4,6 +4,7 @@
         "iosfwd": "cpp",
         "iterator": "cpp",
         "iostream": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "ratio": "cpp"
     }
 }
