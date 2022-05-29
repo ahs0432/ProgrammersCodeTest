@@ -5,34 +5,40 @@
 using namespace std;
 
 int solution(vector< vector<int> > board, vector< vector<int> > skill) {
-    vector<int>* skillT = skill.data();
-    vector<int>* boardT = board.data();
+    vector< vector<int> > boardTotal(board.size()+1, vector<int>(board[0].size()+1, 0));
 
-    for (int i = 0; i < skill.size(); i++) {
-        int* skillTmp = skillT[i].data();
-        if (skillTmp[0] == 1) {
-            for (int j = skillTmp[1]; j <= skillTmp[3]; j++) {
-                int* boardTmp = boardT[j].data();
-                for (int k = skillTmp[2]; k <= skillTmp[4]; k++) {
-                   boardTmp[k] = boardTmp[k] - skillTmp[5];
-                }
-            }
+    for (vector<int> skl : skill) {
+        if (skl[0] == 1) {
+            boardTotal[skl[1]][skl[2]] += -skl[5];
+            boardTotal[skl[3]+1][skl[4]+1] += -skl[5];
+            boardTotal[skl[1]][skl[4]+1] += skl[5];
+            boardTotal[skl[3]+1][skl[2]] += skl[5];
         } else {
-            for (int j = skillTmp[1]; j <= skillTmp[3]; j++) {
-                int* boardTmp = boardT[j].data();
-                for (int k = skillTmp[2]; k <= skillTmp[4]; k++) {
-                   boardTmp[k] = boardTmp[k] + skillTmp[5];
-                }
-            }
+            boardTotal[skl[1]][skl[2]] += skl[5];
+            boardTotal[skl[3]+1][skl[4]+1] += skl[5];
+            boardTotal[skl[1]][skl[4]+1] += -skl[5];
+            boardTotal[skl[3]+1][skl[2]] += -skl[5];
+        }
+    }
+
+    for (int i = 1; i < boardTotal.size(); i++) {
+        for (int j = 0; j < boardTotal[0].size(); j++) {
+            boardTotal[i][j] += boardTotal[i-1][j];
+        }
+    }
+
+    for (int i = 1; i < boardTotal[0].size(); i++) {
+        for (int j = 0; j < boardTotal.size(); j++) {
+            boardTotal[j][i] += boardTotal[j][i-1];
         }
     }
     
     int answer = 0;
 
     for (int i = 0; i < board.size(); i++) {
-        int* boardTmp = boardT[i].data();
+        int* boardTmp = board[i].data();
         for (int j = 0; j < board[i].size(); j++) {
-            if (boardTmp[j] > 0) {
+            if (boardTmp[j]+boardTotal[i][j] > 0) {
                 answer++;
             }
         }
