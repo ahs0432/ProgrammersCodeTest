@@ -148,13 +148,14 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 	topRate := 0
 
 	for i, tmpRate := range tmpRateList {
-		if tmpRate > topRate {
-			topRate = i
+		if winMyRate > winOpRate {
+			if tmpRate > topRate {
+				topRate = i
+			}
 		}
 
 		if tmpRate != 0 {
 			imWin = true
-			break
 		}
 	}
 
@@ -163,7 +164,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 			if nowCount.winner == 0 {
 				nowCount = tmpCount
 			} else {
-				if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
+				if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount > tmpCount.aCount+tmpCount.bCount {
 					nowCount = tmpCount
 				}
 			}
@@ -191,6 +192,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 		}
 	*/
 
+	//fmt.Println(nowCount, myLocTmp)
 	return nowCount, winMyRate, winOpRate
 }
 
