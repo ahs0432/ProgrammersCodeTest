@@ -145,32 +145,51 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 
 	var nowCount counter
 	imWin := false
+	topRate := 0
 
-	for _, tmpRate := range tmpRateList {
+	for i, tmpRate := range tmpRateList {
+		if tmpRate > topRate {
+			topRate = i
+		}
+
 		if tmpRate != 0 {
 			imWin = true
 			break
 		}
 	}
 
-	for _, tmpCount := range tmpCountList {
-		if nowCount.winner == 0 {
-			nowCount = tmpCount
-		} else {
-			if !imWin {
-				if nowCount.aCount+nowCount.bCount <= tmpCount.aCount+tmpCount.bCount {
-					nowCount = tmpCount
-				}
+	if !imWin {
+		for _, tmpCount := range tmpCountList {
+			if nowCount.winner == 0 {
+				nowCount = tmpCount
 			} else {
-				if nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
+				if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
 					nowCount = tmpCount
 				}
 			}
-			/*if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
-				nowCount = tmpCount
-			}*/
 		}
+	} else {
+		nowCount = tmpCountList[topRate]
 	}
+
+	/*
+		for _, tmpCount := range tmpCountList {
+			if nowCount.winner == 0 {
+				nowCount = tmpCount
+			} else {
+				if !imWin {
+					if nowCount.aCount+nowCount.bCount < tmpCount.aCount+tmpCount.bCount {
+						nowCount = tmpCount
+					}
+				} else {
+
+					if nowCount.aCount+nowCount.bCount > tmpCount.aCount+tmpCount.bCount {
+						nowCount = tmpCount
+					}
+				}
+			}
+		}
+	*/
 
 	return nowCount, winMyRate, winOpRate
 }
