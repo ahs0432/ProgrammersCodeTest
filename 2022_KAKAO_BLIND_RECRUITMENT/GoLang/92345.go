@@ -25,11 +25,11 @@ func testing_92345() {
 }
 
 func solution_92345(board [][]int, aloc []int, bloc []int) int {
-	count := playerLocation(board, true, aloc, bloc, counter{0, 0, 0})
+	count, _, _ := playerLocation(board, true, aloc, bloc, counter{0, 0, 0})
 	return count.aCount + count.bCount
 }
 
-func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count counter) counter {
+func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count counter) (counter, int, int) {
 	myLocTmp := make([]int, 2)
 	opLocTmp := make([]int, 2)
 
@@ -44,7 +44,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 		} else {
 			count.winner = 1
 		}
-		return count
+		return count, 0, 1
 	}
 
 	if myLocTmp[0] == opLocTmp[0] && myLocTmp[1] == opLocTmp[1] {
@@ -55,11 +55,13 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 			count.bCount++
 			count.winner = 2
 		}
-		return count
+		return count, 1, 0
 	}
 
 	var tmpCountList []counter
-	var nowCount counter
+	var tmpRateList []int
+	winMyRate := 0
+	winOpRate := 0
 
 	for _, loc := range ableLoc {
 		boardTmp := make([][]int, len(board), len(board[0]))
@@ -80,7 +82,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 					count.winner = 2
 					count.bCount++
 				}
-				return count
+				return count, 1, 0
 			} else {
 				if len(ableLoc) != 1 {
 					continue
@@ -103,7 +105,9 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 			count.bCount++
 		}
 
-		tmpCount := playerLocation(boardTmp, !turn, oploc, loc, count)
+		tmpCount, tmpOpRate, tmpMyRate := playerLocation(boardTmp, !turn, oploc, loc, count)
+		winMyRate += tmpMyRate
+		winOpRate += tmpOpRate
 		boardTmp[myLocTmp[0]][myLocTmp[1]] = 1
 
 		if turn {
@@ -131,9 +135,21 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 		if tmpCount.winner != 0 {
 			if tmpCountList == nil {
 				tmpCountList = []counter{tmpCount}
+				tmpRateList = []int{tmpMyRate}
 			} else {
 				tmpCountList = append(tmpCountList, tmpCount)
+				tmpRateList = append(tmpRateList, tmpMyRate)
 			}
+		}
+	}
+
+	var nowCount counter
+	imWin := false
+
+	for _, tmpRate := range tmpRateList {
+		if tmpRate != 0 {
+			imWin = true
+			break
 		}
 	}
 
@@ -141,13 +157,22 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count co
 		if nowCount.winner == 0 {
 			nowCount = tmpCount
 		} else {
-			if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
-				nowCount = tmpCount
+			if !imWin {
+				if nowCount.aCount+nowCount.bCount <= tmpCount.aCount+tmpCount.bCount {
+					nowCount = tmpCount
+				}
+			} else {
+				if nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
+					nowCount = tmpCount
+				}
 			}
+			/*if tmpCount.winner != 0 && nowCount.aCount+nowCount.bCount >= tmpCount.aCount+tmpCount.bCount {
+				nowCount = tmpCount
+			}*/
 		}
 	}
 
-	return nowCount
+	return nowCount, winMyRate, winOpRate
 }
 
 func locAdd(board [][]int, loc []int) [][]int {
