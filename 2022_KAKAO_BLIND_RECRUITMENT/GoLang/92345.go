@@ -19,6 +19,9 @@ func testing_92345() {
 }
 
 func solution_92345(board [][]int, aloc []int, bloc []int) int {
+	if len(board) < 1 || len(board[0]) < 1 || len(board) > 5 || len(board[0]) > 5 {
+		return 0
+	}
 	if aloc[0] >= len(board) || aloc[1] >= len(board[0]) || bloc[0] >= len(board) || bloc[1] >= len(board[0]) {
 		return 0
 	}
@@ -50,7 +53,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 	tmpOpLoc := make([]int, 2)
 	copy(tmpOpLoc, oploc)
 
-	winRate := 0
+	totalRate := 0
 	canWin := false
 
 	for _, loc := range ableLoc {
@@ -60,37 +63,36 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 			copy(boardTmp[i], board[i])
 		}
 
-		boardTmp[loc[0]][loc[1]] = 0
+		boardTmp[myloc[0]][myloc[1]] = 0
 		winning, rate := playerLocation(boardTmp, !turn, tmpOpLoc, loc)
-		boardTmp[loc[0]][loc[1]] = 1
-
-		rate++
+		boardTmp[myloc[0]][myloc[1]] = 1
 
 		if !winning {
 			if !canWin {
-				winRate = rate
+				totalRate = rate
 				canWin = true
 			} else {
-				if rate < winRate {
-					winRate = rate
+				if rate < totalRate {
+					totalRate = rate
 				}
 			}
 		} else {
 			if canWin {
 				continue
-			}
+			} else {
+				if totalRate == 0 {
+					totalRate = rate
+				}
 
-			if winRate == 0 {
-				winRate = rate
-			}
-
-			if rate > winRate {
-				winRate = rate
+				if rate > totalRate {
+					totalRate = rate
+				}
 			}
 		}
 	}
+	totalRate += 1
 
-	return canWin, winRate
+	return canWin, totalRate
 }
 
 func ableLocCalc(board [][]int, loc []int) [][]int {
@@ -121,169 +123,3 @@ func locAddList(ableLoc [][]int, loc []int) [][]int {
 
 	return ableLoc
 }
-
-/*func playerLocation(board [][]int, turn bool, myloc []int, oploc []int, count counter) (counter, int, int) {
-	myLocTmp := make([]int, 2)
-	opLocTmp := make([]int, 2)
-
-	copy(myLocTmp, myloc)
-	copy(opLocTmp, oploc)
-
-	ableLoc := locAdd(board, myLocTmp)
-
-	if ableLoc == nil {
-		if turn {
-			count.winner = 2
-		} else {
-			count.winner = 1
-		}
-		return count, 0, 1
-	}
-
-	if myLocTmp[0] == opLocTmp[0] && myLocTmp[1] == opLocTmp[1] {
-		if turn {
-			count.aCount++
-			count.winner = 1
-		} else {
-			count.bCount++
-			count.winner = 2
-		}
-		return count, 1, 0
-	}
-
-	var tmpCountList []counter
-	var tmpRateList []int
-	winMyRate := 0
-	winOpRate := 0
-
-	for _, loc := range ableLoc {
-		boardTmp := make([][]int, len(board), len(board[0]))
-		for i := 0; i < len(board); i++ {
-			boardTmp[i] = make([]int, len(board[i]))
-			copy(boardTmp[i], board[i])
-		}
-
-		boardTmp[myLocTmp[0]][myLocTmp[1]] = 0
-		if loc[0] == opLocTmp[0] && loc[1] == opLocTmp[1] {
-			ableOpLoc := locAdd(boardTmp, opLocTmp)
-
-			if ableOpLoc == nil {
-				if turn {
-					count.winner = 1
-					count.aCount++
-				} else {
-					count.winner = 2
-					count.bCount++
-				}
-				return count, 1, 0
-			} else {
-				if len(ableLoc) != 1 {
-					continue
-				}
-			}
-		}
-
-		ableLocReCheck := locAdd(boardTmp, loc)
-		if ableLocReCheck == nil && len(ableLoc) != 1 {
-			continue
-		} else {
-			if len(ableLocReCheck) == 1 && ableLocReCheck[0][0] == opLocTmp[0] && ableLocReCheck[0][1] == opLocTmp[1] && len(ableLoc) != 1 {
-				continue
-			}
-		}
-
-		if turn {
-			count.aCount++
-		} else {
-			count.bCount++
-		}
-
-		tmpCount, tmpOpRate, tmpMyRate := playerLocation(boardTmp, !turn, oploc, loc, count)
-		winMyRate += tmpMyRate
-		winOpRate += tmpOpRate
-		boardTmp[myLocTmp[0]][myLocTmp[1]] = 1
-
-		if turn {
-			count.aCount--
-		} else {
-			count.bCount--
-		}
-
-		if tmpCount.winner != 0 {
-			if tmpCountList == nil {
-				tmpCountList = []counter{tmpCount}
-				tmpRateList = []int{100 / (tmpMyRate + tmpOpRate) * tmpMyRate}
-			} else {
-				tmpCountList = append(tmpCountList, tmpCount)
-				tmpRateList = append(tmpRateList, 100/(tmpMyRate+tmpOpRate)*tmpMyRate)
-			}
-		}
-	}
-
-	var nowCount counter
-	imWin := false
-	topRate := 0
-
-	for i, tmpRate := range tmpRateList {
-		if winMyRate > winOpRate {
-			if tmpRate > topRate {
-				topRate = i
-			}
-		}
-
-		if tmpRate != 0 {
-			imWin = true
-		}
-	}
-
-	if !imWin {
-		for i, tmpCount := range tmpCountList {
-			if nowCount.winner == 0 {
-				nowCount = tmpCount
-				topRate = tmpRateList[i]
-			} else {
-				if tmpCount.winner != 0 {
-					if topRate < tmpRateList[i] {
-						nowCount = tmpCount
-					} else if nowCount.aCount+nowCount.bCount > tmpCount.aCount+tmpCount.bCount {
-						nowCount = tmpCount
-					}
-				}
-			}
-		}
-	} else {
-		nowCount = tmpCountList[topRate]
-	}
-
-	return nowCount, winMyRate, winOpRate
-}
-
-func locAdd(board [][]int, loc []int) [][]int {
-	var ableLoc [][]int
-
-	if loc[0] != 0 && board[loc[0]-1][loc[1]] != 0 {
-		ableLoc = locAddList(ableLoc, []int{loc[0] - 1, loc[1]})
-	}
-	if loc[0] != len(board)-1 && board[loc[0]+1][loc[1]] != 0 {
-		ableLoc = locAddList(ableLoc, []int{loc[0] + 1, loc[1]})
-	}
-	if loc[1] != 0 && board[loc[0]][loc[1]-1] != 0 {
-		ableLoc = locAddList(ableLoc, []int{loc[0], loc[1] - 1})
-	}
-	if loc[1] != len(board[0])-1 && board[loc[0]][loc[1]+1] != 0 {
-		ableLoc = locAddList(ableLoc, []int{loc[0], loc[1] + 1})
-	}
-
-	return ableLoc
-}
-
-func locAddList(ableLoc [][]int, loc []int) [][]int {
-	if ableLoc == nil {
-		ableLoc = [][]int{loc}
-	} else {
-		ableLoc = append(ableLoc, loc)
-	}
-
-	return ableLoc
-}
-*/
