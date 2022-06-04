@@ -23,8 +23,8 @@ func solution_92345(board [][]int, aloc []int, bloc []int) int {
 		return 0
 	}
 	//count, _, _ := playerLocation(board, true, aloc, bloc, counter{0, 0, 0})
-	playerLocation(board, true, aloc, bloc)
-	return 0
+	_, count := playerLocation(board, true, aloc, bloc)
+	return count
 }
 
 // 패배 조건
@@ -40,7 +40,7 @@ func solution_92345(board [][]int, aloc []int, bloc []int) int {
 func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, int) {
 	ableLoc := ableLocCalc(board, myloc)
 	if ableLoc == nil {
-		return false, 1
+		return false, 0
 	}
 
 	if myloc[0] == oploc[0] && myloc[1] == oploc[1] {
@@ -50,6 +50,9 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 	tmpOpLoc := make([]int, 2)
 	copy(tmpOpLoc, oploc)
 
+	winRate := 0
+	canWin := false
+
 	for _, loc := range ableLoc {
 		boardTmp := make([][]int, len(board), len(board[0]))
 		for i := 0; i < len(board); i++ {
@@ -58,17 +61,36 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 		}
 
 		boardTmp[loc[0]][loc[1]] = 0
-		canWin, _ := playerLocation(boardTmp, !turn, tmpOpLoc, loc)
+		winning, rate := playerLocation(boardTmp, !turn, tmpOpLoc, loc)
 		boardTmp[loc[0]][loc[1]] = 1
 
-		if !canWin {
+		rate++
 
+		if !winning {
+			if !canWin {
+				winRate = rate
+				canWin = true
+			} else {
+				if rate < winRate {
+					winRate = rate
+				}
+			}
 		} else {
+			if canWin {
+				continue
+			}
 
+			if winRate == 0 {
+				winRate = rate
+			}
+
+			if rate > winRate {
+				winRate = rate
+			}
 		}
 	}
 
-	return !turn, 0
+	return canWin, winRate
 }
 
 func ableLocCalc(board [][]int, loc []int) [][]int {
