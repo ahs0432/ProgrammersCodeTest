@@ -5,6 +5,7 @@
         "iterator": "cpp",
         "iostream": "cpp",
         "ostream": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "tuple": "cpp"
     }
 }
