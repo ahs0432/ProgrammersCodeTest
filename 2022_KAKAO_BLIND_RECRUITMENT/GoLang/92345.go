@@ -22,6 +22,7 @@ func solution_92345(board [][]int, aloc []int, bloc []int) int {
 	if len(board) < 1 || len(board[0]) < 1 || len(board) > 5 || len(board[0]) > 5 {
 		return 0
 	}
+
 	if aloc[0] >= len(board) || aloc[1] >= len(board[0]) || bloc[0] >= len(board) || bloc[1] >= len(board[0]) {
 		return 0
 	}
@@ -41,7 +42,8 @@ func solution_92345(board [][]int, aloc []int, bloc []int) int {
 // 이때 모든 곳이 레이팅이 더 높을 경우
 
 func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, int) {
-	if !checkLoc(board, myloc) {
+	ableLoc := ableLocCalc(board, myloc)
+	if ableLoc == nil {
 		return false, 0
 	}
 
@@ -52,37 +54,7 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 	totalRate := 0
 	canWin := false
 
-	for i := 1; i <= 4; i++ {
-		loc := make([]int, 2)
-
-		if i/2 == 2 {
-			loc[0] = myloc[0] - 1
-			loc[1] = myloc[1]
-		} else if i/2 == 1 && i%2 == 1 {
-			loc[0] = myloc[0]
-			loc[1] = myloc[1] - 1
-		} else {
-			loc[0] = myloc[0] + (i / 2)
-			loc[1] = myloc[1] + (i % 2)
-		}
-
-		if loc[0] < 0 || loc[1] < 0 || loc[0] >= len(board) || loc[1] >= len(board[0]) {
-			continue
-		}
-
-		if board[loc[0]][loc[1]] == 0 {
-			continue
-		}
-
-		//boardTmp := make([][]int, len(board), len(board[0]))
-		//for i := 0; i < len(board); i++ {
-		//	boardTmp[i] = make([]int, len(board[i]))
-		//	copy(boardTmp[i], board[i])
-		//}
-
-		//boardTmp[myloc[0]][myloc[1]] = 0
-		//winning, rate := playerLocation(boardTmp, !turn, oploc, loc)
-		//boardTmp[myloc[0]][myloc[1]] = 1
+	for _, loc := range ableLoc {
 		board[myloc[0]][myloc[1]] = 0
 		winning, rate := playerLocation(board, !turn, oploc, loc)
 		board[myloc[0]][myloc[1]] = 1
@@ -110,37 +82,36 @@ func playerLocation(board [][]int, turn bool, myloc []int, oploc []int) (bool, i
 			}
 		}
 	}
-
 	totalRate += 1
 
 	return canWin, totalRate
 }
 
-func checkLoc(board [][]int, loc []int) bool {
-	for i := 1; i <= 4; i++ {
-		locTmp := make([]int, 2)
+func ableLocCalc(board [][]int, loc []int) [][]int {
+	var ableLoc [][]int
 
-		if i/2 == 2 {
-			locTmp[0] = loc[0] - 1
-			locTmp[1] = loc[1]
-		} else if i/2 == 1 && i%2 == 1 {
-			locTmp[0] = loc[0]
-			locTmp[1] = loc[1] - 1
-		} else {
-			locTmp[0] = loc[0] + (i / 2)
-			locTmp[1] = loc[1] + (i % 2)
-		}
-
-		if locTmp[0] < 0 || locTmp[1] < 0 || locTmp[0] >= len(board) || locTmp[1] >= len(board[0]) {
-			continue
-		}
-
-		if board[locTmp[0]][locTmp[1]] == 0 {
-			continue
-		}
-
-		return true
+	if loc[0] != 0 && board[loc[0]-1][loc[1]] != 0 {
+		ableLoc = locAddList(ableLoc, []int{loc[0] - 1, loc[1]})
+	}
+	if loc[0] != len(board)-1 && board[loc[0]+1][loc[1]] != 0 {
+		ableLoc = locAddList(ableLoc, []int{loc[0] + 1, loc[1]})
+	}
+	if loc[1] != 0 && board[loc[0]][loc[1]-1] != 0 {
+		ableLoc = locAddList(ableLoc, []int{loc[0], loc[1] - 1})
+	}
+	if loc[1] != len(board[0])-1 && board[loc[0]][loc[1]+1] != 0 {
+		ableLoc = locAddList(ableLoc, []int{loc[0], loc[1] + 1})
 	}
 
-	return false
+	return ableLoc
+}
+
+func locAddList(ableLoc [][]int, loc []int) [][]int {
+	if ableLoc == nil {
+		ableLoc = [][]int{loc}
+	} else {
+		ableLoc = append(ableLoc, loc)
+	}
+
+	return ableLoc
 }
