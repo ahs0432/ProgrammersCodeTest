@@ -4,10 +4,11 @@
 절대적인 정답은 아니며, 풀이에 따라 실행 속도 등의 차이가 보일 수 있습니다.  
 
 현재 진행 중
-- 2021 Dev-Matching: 웹 백엔드 개발자(상반기)
+- 2021 KAKAO BLIND RECRUITMENT
 
 해결 문제
 - 2022 KAKAO BLIND RECRUITMENT
+- 2021 Dev-Matching: 웹 백엔드 개발자(상반기)
 
 문제 링크
 - **https://programmers.co.kr/learn/courses/30/#curriculum** 
