@@ -6,6 +6,8 @@
         "iostream": "cpp",
         "ostream": "cpp",
         "ratio": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "string": "cpp",
+        "regex": "cpp"
     }
 }
