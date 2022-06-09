@@ -6,37 +6,42 @@
 
 using namespace std;
 
+map<string, int> courseMenus;
+map<int, vector<string>> numCourse;
+map<int, int> bestCount;
+
+void dfs(int course, int nowNum, string order, string menu) {
+    if (course == 0) {
+        courseMenus[menu] += 1;
+        int c = menu.size();
+
+        if (courseMenus[menu] != 1) {
+            if (bestCount[c] == courseMenus[menu]) {
+                numCourse[c].push_back(menu);
+            } else if (bestCount[c] < courseMenus[menu]) {
+                bestCount[c] = courseMenus[menu];
+                numCourse[c] = vector<string>{menu};
+            }
+        }
+
+        return;
+    }
+
+    for (int i = nowNum; i < order.size(); i++) {
+        dfs(course-1, i+1, order, menu+order[i]);
+    }
+}
+
 vector<string> solution(vector<string> orders, vector<int> course) {
-    map<string, int> courseMenus;
-    map<int, vector<string>> numCourse;
-    map<int, int> bestCount;
+    courseMenus.clear();
+    numCourse.clear();
+    bestCount.clear();
     string menu = "";
 
     for (string order : orders) {
         sort(order.begin(), order.end());
-        for (int i = 0; i < order.size(); i++) {
-            for (int c : course) {
-                for (int j = i+1; j < order.size(); j++) {
-                    if (c-1 > order.size()-j) {
-                        break;
-                    }
-                    
-                    menu = order[i] + order.substr(j, c-1);
-
-                    courseMenus[menu] += 1;
-
-                    if (courseMenus[menu] != 1) {
-                        if (bestCount[c] == courseMenus[menu]) {
-                            numCourse[c].push_back(menu);
-                        } else if (bestCount[c] < courseMenus[menu]) {
-                            bestCount[c] = courseMenus[menu];
-                            numCourse[c] = vector<string>{menu};
-                        }
-                    }
-
-                    menu.clear();
-                }
-            }
+        for (int c : course) {
+            dfs(c, 0, order, "");
         }
     }
 
@@ -60,7 +65,6 @@ int main() {
     }
     cout << endl;
 
-    /*
     vector<string> bAnswer = solution(vector<string>{"ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"}, vector<int>{2,3,5});
     for (string b : bAnswer) {
         cout << b << " ";
@@ -78,7 +82,6 @@ int main() {
         cout << d << " ";
     }
     cout << endl;
-    */
 
     return 0;
 }
