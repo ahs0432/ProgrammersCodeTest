@@ -6,13 +6,48 @@
 using namespace std;
 
 map<int, vector<vector<int>>> loc;
+map<int, vector<vector<int>>> searchLoc;
+map<int, vector<int>> searchMoney;
+vector<int> lowMoney;
 
-void fareSearch(int now, int dest, vector<int> passBy) {
+void fareSearch(int now, int dest, int money, int user, vector<int> passBy) {
+    if (now == dest) {
+        searchLoc[user].push_back(passBy);
+        searchMoney[user].push_back(money);
 
+        if (lowMoney[user] == -1 || money < lowMoney[user]) {
+            lowMoney[user] = money;
+        }
+        
+        return;
+    }
+
+    for (int i = 0; i < loc[now][0].size(); i++) {
+        bool alreadyCheck = false;
+        for (int passed : passBy) {
+            if (passed == loc[now][0][i]) {
+                alreadyCheck = true;
+                break;
+            }
+        }
+
+        if (alreadyCheck) {
+            continue;
+        }
+
+        passBy.push_back(loc[now][0][i]);
+        fareSearch(loc[now][0][i], dest, money+loc[now][1][i], user, passBy);
+        passBy.pop_back();
+    }
 }
 
 int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
-    int answer = 0;
+    searchLoc[0] = vector<vector<int>>{{}};
+    searchLoc[1] = vector<vector<int>>{{}};
+    searchMoney[0] = vector<int>{};
+    searchMoney[1] = vector<int>{};
+    lowMoney.push_back(-1);
+    lowMoney.push_back(-1);
     
     for (vector<int> fare : fares) {
         if (loc[fare[0]].empty()) {
@@ -30,6 +65,7 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
         loc[fare[1]][1].push_back(fare[2]);
     }
 
+    /*
     for (map<int, vector<vector<int>>>::iterator itr = loc.begin(); itr != loc.end(); ++itr) {
         cout << itr->first << endl;
         for (int i = 0; i < itr->second.size(); i++) {
@@ -37,6 +73,13 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
             cout << itr->second[1][i] << " " << endl;
         }
     }
+    */
+
+    fareSearch(s, a, 0, 0, vector<int>{s});
+    fareSearch(s, b, 0, 1, vector<int>{s});
+    int answer = lowMoney[0] + lowMoney[1];
+
+    // 서칭된 것을 이용하여 서로 겹치는 것은 없는지 확인
 
     return answer;
 }
