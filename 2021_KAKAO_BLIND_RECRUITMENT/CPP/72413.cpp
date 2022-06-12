@@ -8,12 +8,14 @@ using namespace std;
 map<int, vector<vector<int>>> loc;
 map<int, vector<vector<int>>> searchLoc;
 map<int, vector<int>> searchMoney;
+map<int, vector<bool>> searchOpPass;
 vector<int> lowMoney;
 
-void fareSearch(int now, int dest, int money, int user, vector<int> passBy) {
+void fareSearch(int now, int dest, int opDest, int money, int user, bool opPass, vector<int> passBy) {
     if (now == dest) {
         searchLoc[user].push_back(passBy);
         searchMoney[user].push_back(money);
+        searchOpPass[user].push_back(opPass);
 
         if (lowMoney[user] == -1 || money < lowMoney[user]) {
             lowMoney[user] = money;
@@ -36,7 +38,11 @@ void fareSearch(int now, int dest, int money, int user, vector<int> passBy) {
         }
 
         passBy.push_back(loc[now][0][i]);
-        fareSearch(loc[now][0][i], dest, money+loc[now][1][i], user, passBy);
+        if (opDest == loc[now][0][i]) {
+            fareSearch(loc[now][0][i], dest, opDest, money+loc[now][1][i], user, true, passBy);
+        } else {
+            fareSearch(loc[now][0][i], dest, opDest, money+loc[now][1][i], user, opPass, passBy);
+        }
         passBy.pop_back();
     }
 }
@@ -44,8 +50,6 @@ void fareSearch(int now, int dest, int money, int user, vector<int> passBy) {
 int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
     searchLoc[0] = vector<vector<int>>{{}};
     searchLoc[1] = vector<vector<int>>{{}};
-    searchMoney[0] = vector<int>{};
-    searchMoney[1] = vector<int>{};
     lowMoney.push_back(-1);
     lowMoney.push_back(-1);
     
@@ -75,11 +79,21 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
     }
     */
 
-    fareSearch(s, a, 0, 0, vector<int>{s});
-    fareSearch(s, b, 0, 1, vector<int>{s});
+    fareSearch(s, a, b, 0, 0, false, vector<int>{s});
+    fareSearch(s, b, a, 0, 1, false, vector<int>{s});
     int answer = lowMoney[0] + lowMoney[1];
 
     // 서칭된 것을 이용하여 서로 겹치는 것은 없는지 확인
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < searchLoc[i].size(); j++) {
+            if (searchOpPass[i][j]) {
+                if (searchMoney[i][j] < answer) {
+                    answer = searchMoney[i][j];
+                }
+                continue;
+            }
+        }
+    }
 
     return answer;
 }
