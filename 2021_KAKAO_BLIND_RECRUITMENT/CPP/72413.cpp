@@ -5,9 +5,57 @@
 
 using namespace std;
 
-int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
-    map<int, vector<vector<int>>> loc;
+map<int, vector<vector<int>>> loc;
+int lowMoney = -1;
 
+void searchMove(int money, bool user, vector<int> nowLoc, vector<int> destLoc, vector<vector<int>> passBy) {
+    if (nowLoc[user] == destLoc[user]) {
+        if (nowLoc[!user] == destLoc[!user]) {
+            if (lowMoney == -1 || lowMoney > money) {
+                lowMoney = money;
+            }
+            return;
+        } else {
+            searchMove(money, !user, nowLoc, destLoc, passBy);
+        }
+    } else {
+        int passedCount = 0;
+        for (int i = 0; i < loc[nowLoc[user]][0].size(); i++) {
+            bool alreadyCheck = false;
+            for (int passed : passBy[user]) {
+                if (passed == loc[nowLoc[user]][0][i]) {
+                    alreadyCheck = true;
+                    passedCount+=1;
+                    break;
+                }
+            }
+
+            if (alreadyCheck) {
+                continue;
+            }
+
+            int tmpNowLoc = nowLoc[user];
+
+            passBy[user].push_back(loc[nowLoc[user]][0][i]);
+            nowLoc[user] = loc[nowLoc[user]][0][i];
+
+            if (nowLoc[user] == nowLoc[!user]) {
+                searchMove(money, !user, nowLoc, destLoc, passBy);
+            } else {
+                searchMove(money+loc[tmpNowLoc][1][i], !user, nowLoc, destLoc, passBy);
+            }
+
+            passBy[user].pop_back();
+            nowLoc[user] = tmpNowLoc;
+        }
+        
+        if (passedCount == loc[nowLoc[user]][0].size()) {
+            return;
+        }
+    }
+}
+
+int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
     for (vector<int> fare : fares) {
         if (loc[fare[0]].empty()) {
             loc[fare[0]] = vector<vector<int>>{{}, {}};
@@ -23,10 +71,10 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
         loc[fare[1]][0].push_back(fare[0]);
         loc[fare[1]][1].push_back(fare[2]);
     }
+    
+    searchMove(0, 0, vector<int>{s, s}, vector<int>{a, b}, vector<vector<int>>{{s}, {s}});
 
-    int answer = 0;
-
-    return answer;
+    return lowMoney;
 }
 
 int main() {
@@ -36,3 +84,5 @@ int main() {
     
     return 0;
 }
+
+// 정확성은 있는데, 효율성은 떨어짐
