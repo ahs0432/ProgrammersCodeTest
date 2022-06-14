@@ -1,80 +1,47 @@
 #include <string>
 #include <vector>
+#include <queue>
 #include <iostream>
-#include <map>
 
 #define INF 2147483647
 
 using namespace std;
 
-map<int, vector<vector<int>>> loc;
-map<int, int> money;
-map<int, bool> visited;
+vector<int> dijkstra(int n, int s, vector<pair<int, int>> loc[]) {
+    vector<int> dist(n, INF);
+    priority_queue<pair<int, int>> pq;
+    dist[s] = 0;
+    pq.push(make_pair(0, s));
 
-void dijkstra(int now, int nowMoney) {
-    vector<int> sortNumber;
-
-    for (int i = 0; i < loc[now][0].size(); i++) {
-        if (money[loc[now][0][i]] == INF || money[loc[now][0][i]] > nowMoney + loc[now][1][i]) {
-            money[loc[now][0][i]] = nowMoney + loc[now][1][i];
-        }
+    while (!pq.empty()) {
+        int cost = -pq.top().first;
+        int cur = pq.top().second;
+        pq.pop();
         
-        if (sortNumber.empty()) {
-            sortNumber.push_back(i);
-        } else {
-            bool inserted = false;
-            for (int j = 0; j < sortNumber.size(); j++) {
-                if (loc[now][1][sortNumber[j]] > loc[now][1][i]) {
-                    sortNumber.insert(sortNumber.begin(), i);
-                    inserted = true;
-                    break;
-                }
-            }
-            if (!inserted) {
-                sortNumber.push_back(i);
+        for (int i = 0; i < loc[cur].size(); i++) {
+            int next = loc[cur][i].first;
+            int nCost = cost + loc[cur][i].second;
+            if (nCost < dist[next] ) {
+                dist[next] = nCost;
+                pq.push(make_pair(-nCost, next));
             }
         }
     }
 
-    for (int i = 0; i < sortNumber.size(); i++) {
-        if (visited[loc[now][0][sortNumber[i]]]) {
-            return;
-        }
-        
-        visited[loc[now][0][sortNumber[i]]] = true;
-        dijkstra(loc[now][0][sortNumber[i]], nowMoney+loc[now][1][sortNumber[i]]);
-    }
+    return dist;
 }
 
 int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
+    vector<pair<int, int>> loc[n];
+
     for (vector<int> fare : fares) {
-        if (loc[fare[0]].empty()) {
-            loc[fare[0]] = vector<vector<int>>{{}, {}};
-            money[fare[0]] = INF;
-        }
-
-        if (loc[fare[1]].empty()) {
-            loc[fare[1]] = vector<vector<int>>{{}, {}};
-            money[fare[1]] = INF;
-        }
-
-        loc[fare[0]][0].push_back(fare[1]);
-        loc[fare[0]][1].push_back(fare[2]);
-        loc[fare[1]][0].push_back(fare[0]);
-        loc[fare[1]][1].push_back(fare[2]);
+        loc[fare[0]-1].push_back(make_pair(fare[1]-1, fare[2]));
+        loc[fare[1]-1].push_back(make_pair(fare[0]-1, fare[2]));
     }
 
-    money[s] = 0;
-    visited[s] = true;
-    
-    dijkstra(s, 0);
-    int lowMoney = money[a] + money[b];
+    vector<int> dist = dijkstra(n, s-1, loc);
 
-    loc.clear();
-    money.clear();
-    visited.clear();
-
-    return lowMoney;
+    return dist[a-1] + dist[b-1];
 }
 
 int main() {
