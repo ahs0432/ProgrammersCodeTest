@@ -40,8 +40,18 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
     }
 
     vector<int> dist = dijkstra(n, s-1, loc);
+    int answer = dist[a-1] + dist[b-1];
 
-    return dist[a-1] + dist[b-1];
+    for (int i = 0; i < n; i++) {
+        if (s-1 != i) {
+            vector<int> tmpDist = dijkstra(n, i, loc);
+            if (dist[i] + tmpDist[a-1] + tmpDist[b-1] < answer) {
+                answer = dist[i] + tmpDist[a-1] + tmpDist[b-1];
+            }
+        }
+    }
+
+    return answer;
 }
 
 int main() {
@@ -51,5 +61,3 @@ int main() {
     
     return 0;
 }
-
-// 정확성은 있는데, 효율성은 떨어짐
