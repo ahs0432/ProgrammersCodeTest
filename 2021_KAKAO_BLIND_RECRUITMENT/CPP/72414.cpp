@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// 정확도 22.6%
+// 정확도 87.1%
 vector<string> split(string input, char delimiter) {
     vector<string> answer;
     stringstream ss(input);
@@ -25,6 +25,16 @@ int splitTime(string timeString) {
     return time;
 }
 
+string timeFormat(int a) {
+    if (a == 0) {
+        return "00";
+    } else if (a < 10) {
+        return "0" + to_string(a);
+    } else {
+        return to_string(a);
+    }
+}
+
 string solution(string play_time, string adv_time, vector<string> logs) {
     if (play_time == adv_time) {
         return "00:00:00";
@@ -37,57 +47,44 @@ string solution(string play_time, string adv_time, vector<string> logs) {
         return "00:00:00";
     }
 
-    vector<vector<int>> logTime = vector<vector<int>>{{}, {}, {}};
+    vector<vector<int>> logTime = vector<vector<int>>{{}, {}};
+    vector<int> totalTime(playTime, 0);
 
     for (string log : logs) {
         vector<string> times = split(log, '-');
 
         logTime[0].push_back(splitTime(times[0]));
         logTime[1].push_back(splitTime(times[1]));
-        logTime[2].push_back(logTime[1].back()-logTime[0].back());
+        totalTime[logTime[0].back()] += 1;
+        totalTime[logTime[1].back()] -= 1;
+    }
+    
+    // 각 시청 시간 뿌려주기
+    for (int i = 1; i < playTime; i++) {
+        totalTime[i] += totalTime[i-1];
     }
 
-    vector<vector<vector<int>>> includeTime;
+    int answer, topTime, nowTime = 0;
 
-    int topTime = 0;
-    int answer = 0;
+    for (int i = 0; i < advTime; i++) {
+        nowTime += totalTime[i];
+    }
 
-    for (int i = 0; i < logTime[0].size(); i++) {
-        int totalTime = 0;
-        int startTime = logTime[0][i];
-        int endTime = logTime[0][i] + advTime;
-        
-        if (logTime[2][i] < advTime) {
-            totalTime = logTime[2][i];
-        } else {
-            totalTime = advTime;
-        }
+    for (int i = advTime; i < playTime; i++) {
+        nowTime -= totalTime[i-advTime];
+        nowTime += totalTime[i];
 
-        for (int j = 0; j < logTime[0].size(); j++) {
-            if (j == i) {
-                continue;
-            }
-
-            if (startTime <= logTime[0][j] && endTime >= logTime[0][j]) {
-                if (endTime >= logTime[1][j]) {
-                    totalTime += logTime[2][j];
-                } else {
-                    totalTime += endTime - logTime[0][j];
-                }
-            } else if (startTime <= logTime[1][j] && endTime >= logTime[1][j]) {
-                totalTime += logTime[1][j] - startTime;
-            }
-        }
-
-        if (topTime < totalTime) {
-            topTime = totalTime;
-            answer = i;
-        } else if (topTime == totalTime && logTime[0][i] < logTime[0][answer]) {
-            answer = i;
+        if (topTime < nowTime) {
+            answer = i-(advTime-1);
+            topTime = nowTime;
         }
     }
 
-    return split(logs[answer], '-')[0];
+    if (answer == 0) {
+        return "00:00:00";
+    }
+
+    return timeFormat(answer/60/60) + ":" + timeFormat(answer/60%60) + ":" + timeFormat(answer%60);
 }
 
 int main() {
