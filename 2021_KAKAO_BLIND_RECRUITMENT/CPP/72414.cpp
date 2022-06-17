@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// 정확도 87.1%
+// 정확도 93.5%
 vector<string> split(string input, char delimiter) {
     vector<string> answer;
     stringstream ss(input);
@@ -58,25 +58,27 @@ string solution(string play_time, string adv_time, vector<string> logs) {
         totalTime[logTime[0].back()] += 1;
         totalTime[logTime[1].back()] -= 1;
     }
-    
-    // 각 시청 시간 뿌려주기
+
     for (int i = 1; i < playTime; i++) {
         totalTime[i] += totalTime[i-1];
     }
 
-    int answer, topTime, nowTime = 0;
+    int nowTime = 0;
 
-    for (int i = 0; i < advTime; i++) {
+    for (int i = 0; i < advTime-1; i++) {
         nowTime += totalTime[i];
     }
+
+    int answer = 0;
+    int topTime = nowTime;
 
     for (int i = advTime; i < playTime; i++) {
         nowTime -= totalTime[i-advTime];
         nowTime += totalTime[i];
 
         if (topTime < nowTime) {
-            answer = i-(advTime-1);
             topTime = nowTime;
+            answer = i-(advTime-1);
         }
     }
 
