@@ -68,6 +68,7 @@
         "variant": "cpp",
         "__functional_base": "cpp",
         "algorithm": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "queue": "cpp"
     }
 }
