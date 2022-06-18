@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// 정확도 96.8%
+// 정확도 100%
 vector<string> split(string input, char delimiter) {
     vector<string> answer;
     stringstream ss(input);
@@ -47,7 +47,7 @@ string solution(string play_time, string adv_time, vector<string> logs) {
         return "00:00:00";
     }
 
-    vector<int> totalTime(playTime);
+    vector<int> totalTime(playTime+1);
 
     for (string log : logs) {
         vector<string> times = split(log, '-');
