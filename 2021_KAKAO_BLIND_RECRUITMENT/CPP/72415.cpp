@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// 정확도 80%
+// 정확도 100%
 int cardMove(vector<vector<int>> board, vector<int> src, vector<int> dst, bool type, int count) {
     if (src[0] == dst[0] && src[1] == dst[1]) {
         return count;
@@ -24,29 +24,25 @@ int cardMove(vector<vector<int>> board, vector<int> src, vector<int> dst, bool t
             absCount = -absCount;
         }
 
-        if (type && board[src[!type]][src[type]+absCount] == 0) {
+        if (type && !oneTouch && board[src[!type]][src[type]+absCount] == 0) {
             oneTouch = true;
-        } else if (!type && board[src[type]+absCount][src[!type]] == 0) {
+        } else if (!type && !oneTouch && board[src[type]+absCount][src[!type]] == 0) {
             oneTouch = true;
         } else if (oneTouch && oneTouchTarget == 0 && type && (src[type]+absCount == 3 || src[type]+absCount == 0 || board[src[!type]][src[type]+absCount] != 0)) {
             oneTouchTarget = i;
             oneTouchCount += 1;
-            break;
         } else if (oneTouch && oneTouchTarget == 0 && !type && (src[type]+absCount == 3 || src[type]+absCount == 0 || board[src[type]+absCount][src[!type]] != 0)) {
             oneTouchTarget = i;
             oneTouchCount += 1;
-            break;
-        } else {
+        } else if (!oneTouch){
             oneTouchCount += 1;
         }
-    }
 
-    for (int i = 1; i <= abs(dst[type]-src[type]); i++) {
         int addCount = 0;
         int moving = i;
         if (oneTouchTarget == i) {
             addCount = oneTouchCount;
-        } else if (oneTouch && oneTouchTarget < i) {
+        } else if (oneTouch && oneTouchTarget != 0 && oneTouchTarget < i) {
             addCount = oneTouchCount + 1;
         } else {
             addCount = i;
@@ -62,6 +58,7 @@ int cardMove(vector<vector<int>> board, vector<int> src, vector<int> dst, bool t
             lowCount = tmpCount;
         }
         src[type] -= moving;
+        
     }
     
     return lowCount;
@@ -99,7 +96,6 @@ int calcMove(vector<vector<int>> board, vector<int> cardList, map<int, vector<ve
         if (lowCount == 0 || lowCount > move) {
             lowCount = move;
         }
-       
     }
 
     return lowCount;
