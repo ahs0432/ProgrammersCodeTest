@@ -5,6 +5,7 @@
 
 현재 진행 중
 - 2021 KAKAO BLIND RECRUITMENT
+- Algorithm Practice Kit - HASH
 
 해결 문제
 - 2022 KAKAO BLIND RECRUITMENT
@@ -13,3 +14,4 @@
 
 문제 링크
 - **https://programmers.co.kr/learn/courses/30/#curriculum** 
+- **https://programmers.co.kr/learn/challenges?tab=algorithm_practice_kit**
