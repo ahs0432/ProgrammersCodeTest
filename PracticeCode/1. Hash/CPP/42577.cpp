@@ -7,21 +7,17 @@
 
 using namespace std;
 
-// 정확도 100%, 효율성 75%
-bool compareSort(string a, string b) {
-    return a.size() < b.size();
-}
-
+// 정확도 100%, 효율성 100%
 bool solution(vector<string> phone_book) {
     sort(phone_book.begin(), phone_book.end());
-    sort(phone_book.begin(), phone_book.end(), compareSort);
 
-    for (int i = 0; phone_book[i].size() < phone_book.back().size(); i++) {
-        string s = phone_book[i];
-        for (int j = i+1; j < phone_book.size(); j++) {
-            if (phone_book[j].substr(0, s.size()) == s) {
-                return false;
-            }
+    for (int i = 1; i < phone_book.size(); i++) {
+        if (phone_book[i].size() <= phone_book[i-1].size()) {
+            continue;
+        }
+
+        if (phone_book[i].substr(0, phone_book[i-1].size()) == phone_book[i-1]) {
+            return false;
         }
     }
 
