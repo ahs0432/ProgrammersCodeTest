@@ -1,46 +1,37 @@
 #include <string>
 #include <vector>
-#include <map>
 #include <iostream>
 
 using namespace std;
 
-// Stack을 이용한 풀이 방법이 존재하니 확인
-vector<int> solution(vector<int> prices) {
-    vector<int> answer(prices.size(), 0);
-    int minLoc = 0;
+int solution(int bridge_length, int weight, vector<int> truck_weights) {
+    vector<int> countTruck(truck_weights.size(), 0);
+    int answer = 0;
+    int nowWeight = 0;
+    int firstTruck = 0;
+    int nowTruck = 0;
 
-    for (int i = prices.size()-1; i >= 0 ; i--) {
-        if (i == prices.size()-1) {
-            minLoc = i;
-        } else {
-            if (prices[minLoc] >= prices[i]) {
-                minLoc = i;
-                answer[i] = (prices.size() - 1) - i;
-            } else {
-                for (int j = i+1; j <= minLoc; j++) {
-                    if (prices[j] < prices[i]) {
-                        answer[i] = j - i;
-                        break;
-                    }
-                }
+    while(firstTruck < truck_weights.size()) {
+        answer++;
+        if (nowTruck < truck_weights.size() && (nowWeight + truck_weights[nowTruck]) <= weight) {
+            nowWeight += truck_weights[nowTruck];
+            nowTruck += 1;
+        }
+
+        for (int i = firstTruck; i < nowTruck; i++) {
+            countTruck[i] += 1;
+            if (countTruck[i] == bridge_length) {
+                nowWeight -= truck_weights[firstTruck];
+                firstTruck++;
             }
         }
     }
-
-    return answer;
+    
+    return answer + 1;
 }
 
 int main() {
-    for (int a : solution(vector<int>{1, 2, 3, 2, 3})) {
-        cout << a << " ";
-    }
-    cout << endl;
-
-    for (int a : solution(vector<int>{2121, 33, 11, 231, 22})) {
-        cout << a << " ";
-    }
-    cout << endl;
-
-    return 0;
+    cout << solution(2, 10, vector<int>{7,4,5,6}) << endl;
+    cout << solution(100, 100, vector<int>{10}) << endl;
+    cout << solution(100, 100, vector<int>{10,10,10,10,10,10,10,10,10,10}) << endl;
 }
