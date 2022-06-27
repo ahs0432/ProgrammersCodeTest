@@ -7,60 +7,56 @@
 using namespace std;
 
 // 정확성 85% / TC 7, 10, 18 Timeout 
-struct compare{
-    bool operator()(pair<int, int>a, pair<int, int>b){
-		return a.second>b.second;
+struct compareDefault {
+    bool operator()(pair<int, int> a, pair<int, int> b){
+        return a.first>b.first;
+	}
+};
+
+struct compareProcess {
+    bool operator()(pair<int, int> a, pair<int, int> b){
+        return a.second>b.second;
 	}
 };
 
 int solution(vector<vector<int>> jobs) {
-    int lastSec = 0;
-    map<int, vector<int>> jobSec;
-    priority_queue<pair<int, int>, vector<pair<int, int>>, compare> pq;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, compareDefault> job_pq;
 
     for (int i = 0; i < jobs.size(); i++) {
-        jobSec[jobs[i][0]].push_back(i);
-        if (lastSec < jobs[i][0]) {
-            lastSec = jobs[i][0];
-        }
+        job_pq.push({jobs[i][0], jobs[i][1]});
     }
 
+    priority_queue<pair<int, int>, vector<pair<int, int>>, compareProcess> queuing;
+
+    int nowTime = 0;
     int answer = 0;
-    int totalSec = 0;
-    int remainSec = 0;
-    pair<int, int> nowJob;
-    bool process = false;
 
-    while(true) {
-        if (lastSec < totalSec && !process && pq.empty()) {
-            break;
-        } 
-        if (!jobSec[totalSec].empty()) {
-            for (int i = 0; i < jobSec[totalSec].size(); i++) {
-                pq.push({jobs[jobSec[totalSec][i]][0], jobs[jobSec[totalSec][i]][1]});
+    for (int i = 0; i < jobs.size(); i++) {
+        if (queuing.empty() && job_pq.top().first > nowTime) {
+            nowTime = job_pq.top().first;
+        }
+
+        while (true) {
+            if (!job_pq.empty() && job_pq.top().first <= nowTime) {
+                queuing.push(job_pq.top());
+                job_pq.pop();
+            } else {
+                break;
             }
         }
 
-        if (process) {
-            remainSec--;
-            if (remainSec == 0) {
-                process = false;
-                answer += ((totalSec+1) - nowJob.first);
-            }
-        } else {
-            if (!pq.empty()) {
-                nowJob = pq.top();
-                process = true;
-                remainSec = nowJob.second - 1;
-                pq.pop();
-            }
-        }
-        totalSec++;
+        nowTime += queuing.top().second;
+        answer += (nowTime - queuing.top().first);
+        queuing.pop();
     }
-    
+
     return answer / jobs.size();
 }
 
 int main() {
     cout << solution(vector<vector<int>>{{0, 3}, {1, 9}, {2, 6}}) << endl;
+    cout << solution(vector<vector<int>>{{1, 3}, {1, 9}, {2, 6}}) << endl;
+    cout << solution(vector<vector<int>>{{0, 9}, {1, 1}, {1, 1}, {1, 1}, {1, 1}}) << endl;
+    cout << solution(vector<vector<int>>{{24, 10}, {28, 39}, {43, 20}, {37, 5}, {47, 22}, {20, 47}, {15, 34}, {15, 2}, {35, 43}, {26, 1}}) << endl;
+    
 }
