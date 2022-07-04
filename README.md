@@ -5,7 +5,7 @@
 
 현재 진행 중
 - 2021 KAKAO BLIND RECRUITMENT
-- Algorithm Practice Kit - Brute Force
+- Algorithm Practice Kit - Greedy
 
 해결 문제
 - 2022 KAKAO BLIND RECRUITMENT
@@ -14,6 +14,7 @@
 - Algorithm Practice Kit - Stack-Queue
 - Algorithm Practice Kit - Heap
 - Algorithm Practice Kit - Sort
+- Algorithm Practice Kit - Brute Force
 - SQL 문제 전체.
 
 문제 링크
