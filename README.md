@@ -6,6 +6,7 @@
 현재 진행 중
 - 2021 KAKAO BLIND RECRUITMENT
 - Algorithm Practice Kit - Greedy
+- 오늘의 문제.
 
 해결 문제
 - 2022 KAKAO BLIND RECRUITMENT
