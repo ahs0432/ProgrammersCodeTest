@@ -7,15 +7,15 @@ using namespace std;
 const int MAX = 8;
 vector<vector<int>> calcList(MAX);
 
-// 정확도 77.8% / TC 5, 8 
+// 문제는.. count / MAX 비교 간 같은 걸 해둬서 8번째를 검사하지 않음..
 int dfs(int N, int number, int count) {
-    if (count >= MAX) {
+    if (count > MAX) {
         return -1;
     }
-
-    for (int i = 0; i < (count - 1); i++) {
+    
+    for (int i = 0; i < count - 1; i++) {
         for (int calcI : calcList[i]) {
-            for (int calcJ : calcList[(count - 1) - i - 1]) {
+            for (int calcJ : calcList[(count - 1) - (i + 1)]) {
                 if (number == (calcI + calcJ)) {
                     return count;
                 } else if (number == (calcI * calcJ)) {
