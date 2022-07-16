@@ -1,28 +1,20 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
 
-// 정확성에서도 TimeOut
-int dfs(vector<vector<int>> triangle, int row, int col, int sum) {
-    if (triangle.size() == col) {
-        return sum;
-    }
-
-    sum += triangle[col][row];
-
-    int nowSum1 = dfs(triangle, row, col + 1, sum);
-    int nowSum2 = dfs(triangle, row + 1, col + 1, sum);
-
-    if (nowSum1 >= nowSum2) {
-        return nowSum1;
-    }
-    return nowSum2;
-}
-
 int solution(vector<vector<int>> triangle) {
-    return dfs(triangle, 0, 0, 0);
+    for (int i = 1; i < triangle.size(); i++) {
+        triangle[i][0] += triangle[i-1][0];
+        for (int j = 1; j < i; j++) {
+            triangle[i][j] += *max_element(triangle[i-1].begin() + (j - 1), triangle[i-1].begin() + (j + 1));
+        }
+        triangle[i][i] += triangle[i-1][i-1];
+    }
+
+    return *max_element(triangle[triangle.size()-1].begin(), triangle[triangle.size()-1].end());
 }
 
 int main() {
