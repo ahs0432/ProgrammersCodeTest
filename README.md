@@ -5,7 +5,7 @@
 
 현재 진행 중
 - 2021 KAKAO BLIND RECRUITMENT
-- Algorithm Practice Kit - Greedy
+- Algorithm Practice Kit - DFS/BFS
 - 오늘의 문제.
 
 해결 문제
@@ -16,6 +16,8 @@
 - Algorithm Practice Kit - Heap
 - Algorithm Practice Kit - Sort
 - Algorithm Practice Kit - Brute Force
+- Algorithm Practice Kit - Greedy
+- Algorithm Practice Kit - Dynamic Programming
 - SQL 문제 전체.
 
 문제 링크
