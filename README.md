@@ -5,7 +5,6 @@
 
 현재 진행 중
 - 2021 KAKAO BLIND RECRUITMENT
-- Algorithm Practice Kit - Stack-Queue
 - Algorithm Practice Kit - Brute Force
 - Algorithm Practice Kit - Dynamic Programming
 - Algorithm Practice Kit - DFS/BFS
@@ -15,6 +14,7 @@
 - 2022 KAKAO BLIND RECRUITMENT
 - 2021 Dev-Matching: 웹 백엔드 개발자(상반기)
 - Algorithm Practice Kit - HASH
+- Algorithm Practice Kit - Stack-Queue
 - Algorithm Practice Kit - Heap
 - Algorithm Practice Kit - Sort
 - Algorithm Practice Kit - Greedy
