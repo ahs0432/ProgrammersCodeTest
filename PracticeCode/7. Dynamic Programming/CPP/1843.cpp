@@ -1,53 +1,47 @@
 #include <vector>
 #include <string>
-#include <queue>
-#include <algorithm>
 #include <iostream>
 
 using namespace std;
 
-vector<int> arrResult;
-queue<vector<string>> arrs;
-
-// 정확성 100%, 효율성 0%
-void arrCalc(vector<string> arr) {
-    if (arr.size() <= 3) {
-        if (arr[1] == "+") {
-            arrResult.push_back(stoi(arr[0]) + stoi(arr[2]));
-        } else {
-            arrResult.push_back(stoi(arr[0]) - stoi(arr[2]));
-        }
-
-        return;
-    }
-
-    vector<string> tmpArr = arr;
-    for (int i = 0; i < arr.size() - 1;) {
-        if (arr[i + 1] == "+") {
-            arr[i] = to_string(stoi(arr[i]) + stoi(arr[i+2]));
-        } else {
-            arr[i] = to_string(stoi(arr[i]) - stoi(arr[i+2]));
-        }
-
-        arr.erase(arr.begin() + (i + 1));
-        arr.erase(arr.begin() + (i + 1));
-        arrs.push(arr);
-
-        i += 2;
-        arr = tmpArr;
-    }
+int min_element(int a, int b) {
+    return (a < b ? a : b);
 }
 
-int solution(vector<string> arr) {
-    arrs.push(arr);
+int max_element(int a, int b) {
+    return (a > b ? a : b);
+}
 
-    while (!arrs.empty()) {
-        arrCalc(arrs.front());
-        arrs.pop();
+// 뒤에서부터 최소, 최대 값을 구해두고 -가 나올 경우 이전 -와 현재 - 사이 값의 값과 계산하여 최소, 최대 값 재계산
+// 조금의 힌트를 확인해본 문제
+int solution(vector<string> arr) {
+    int sum = stoi(arr.back());
+    int max = 0;
+    int min = 0;
+
+    for (int i = arr.size() - 2; i >= 0; i--) {
+        if (arr[i] == "-") {
+            int tmpMax = max;
+            int tmpMin = min;
+
+            // 모든 수를 더하고(3 + 5) 이전 계산된 최대 값(-8)과 더한 뒤 -로 적용 / -((3 + 5) - 8) 구현
+            // 모든 수를 더하고(3 + 5) -로 적용한 뒤 이전 계산된 최소 값(-8)과 덧셈 적용 / (-(3 + 5) - 8) 구현
+            min = min_element(-(sum + tmpMax), (-sum + tmpMin));
+
+            // 모든 수를 더하고(3 + 5) 이전 계산된 최소 값(-8)과 더한 뒤 -로 적용 / -((3 + 5) - 8) 구현
+            // 모든 수를 더하고(3 + 5) 이전 계산된 최대 값과(-8)과 더한 뒤 이전 수의 두 배를 뺌 / ((3 + 5) - 8) - (3 * 2) = (-3) + (5 - 8) 구현
+            max = max_element(-(sum + tmpMin), (sum + tmpMax - (2 * stoi(arr[i + 1]))));
+            
+            sum = 0;
+        } else if (arr[i] == "+") {
+            continue;
+        } else {
+            sum += stoi(arr[i]);
+        }
     }
 
-    sort(arrResult.begin(), arrResult.end());
-    return arrResult.back();
+    // 최종 최댓값과 마지막으로 남은 덧셈 숫자를 더함으로 계산 종료
+    return max + sum;
 }
 
 int main() {
