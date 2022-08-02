@@ -71,6 +71,7 @@
         "functional": "cpp",
         "queue": "cpp",
         "__functional_base_03": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "set": "cpp"
     }
 }
