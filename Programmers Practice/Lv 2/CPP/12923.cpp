@@ -3,18 +3,39 @@
 
 using namespace std;
 
-// 효율성 실패
+// 효율성 실패 2
 vector<int> solution(long long begin, long long end) {
-    vector<int> answer(end, 0);
+    vector<int> answer;
+    vector<bool> isPrime(end + 1, true);
     
-    for (int i = 1; i <= end / 2; i++) {
-        for (int j = i * 2; j <= end; j+=i) {
-            answer[j - 1] = i;
+    isPrime[0] = false;
+    isPrime[1] = false;
+    
+    for(long long i = 2; i * i <= end; i++){
+        if(isPrime[i]){
+            for(long long j = i * i; j <= end; j += i) {
+                isPrime[j] = false;
+            }
         }
     }
     
-    vector<int> slice;
-    slice.assign(answer.begin() + begin - 1, answer.end());
+    for (int i = begin; i <= end; i++) {
+        if (i == 1) {
+            answer.push_back(0);
+            continue;
+        }
+        
+        if (isPrime[i]) {
+            answer.push_back(1);
+        } else {
+            for (long long j = 2; j <= i/2; j++) {
+                if (i % j == 0) {
+                    answer.push_back(i / j);
+                    break;
+                }
+            }
+        }
+    }
     
-    return slice;
+    return answer;
 }
