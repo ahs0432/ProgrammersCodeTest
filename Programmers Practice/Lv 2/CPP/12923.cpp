@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// 효율성 실패 3
+// 효율성 실패 3 - 이전까지는 시간 초과
 vector<int> solution(long long begin, long long end) {
     vector<int> answer;
 
