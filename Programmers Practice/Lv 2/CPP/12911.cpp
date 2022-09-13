@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// 10진수 -> 2진수 변환
 string toBinary(int n) {
     string b = "";
     
@@ -15,6 +16,7 @@ string toBinary(int n) {
     return b;
 }
 
+// 2진수 -> 10진수 변환
 int toInteger(string b) {
     int n = 0;
     int now = 1;
@@ -31,6 +33,7 @@ int toInteger(string b) {
     return n;
 }
 
+// 정확성 2, 4번 실패.. 원인이 뭐지..
 int solution(int n) {
     if (n == 0) {
         return 0;
