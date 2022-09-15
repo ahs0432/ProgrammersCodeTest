@@ -1,11 +1,13 @@
+#include <vector>
+
+using namespace std;
+
 long long solution(int n) {
-    if (n == 0) {
-        return 1;
+    vector<int> dp = {1, 2};
+    
+    for (int i = 2; i < n; i++) {
+        dp.push_back((dp[i - 1] + dp[i - 2]) % 1234567);
     }
     
-    long long total = 0;
-    total += solution(n - 1);
-    if (n >= 2) total += solution(n - 2);
-    
-    return total % 1234567;
+    return dp[n - 1];
 }
